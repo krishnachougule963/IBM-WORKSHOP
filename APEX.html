@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Apex Finance Agent | Sequential Task Agent</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+html{
+scroll-behavior:smooth;
+}
+
+body{
+background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb,#0ea5e9);
+background-size:400% 400%;
+animation:bg 15s infinite;
+color:white;
+overflow-x:hidden;
+}
+
+@keyframes bg{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+nav{
+position:fixed;
+width:100%;
+top:0;
+padding:18px 8%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(15px);
+z-index:1000;
+}
+
+.logo{
+font-size:28px;
+font-weight:700;
+}
+
+.logo span{
+color:#38bdf8;
+}
+
+nav ul{
+display:flex;
+list-style:none;
+gap:25px;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+transition:.3s;
+}
+
+nav a:hover{
+color:#38bdf8;
+}
+
+.hero{
+height:100vh;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 8%;
+}
+
+.hero-text{
+max-width:650px;
+}
+
+.hero h1{
+font-size:58px;
+margin-bottom:20px;
+}
+
+.hero span{
+color:#38bdf8;
+}
+
+.hero p{
+line-height:1.8;
+font-size:18px;
+opacity:.9;
+margin-bottom:30px;
+}
+
+.btn{
+padding:15px 35px;
+border:none;
+border-radius:50px;
+background:#38bdf8;
+color:white;
+font-size:17px;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
+}
+
+.btn:hover{
+transform:translateY(-5px);
+box-shadow:0 15px 30px rgba(0,0,0,.3);
+}
+
+.ai-box{
+width:360px;
+height:360px;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:120px;
+backdrop-filter:blur(15px);
+animation:float 4s infinite;
+}
+
+@keyframes float{
+50%{transform:translateY(-20px);}
+}
+
+section{
+padding:100px 8%;
+}
+
+.title{
+text-align:center;
+font-size:40px;
+margin-bottom:60px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+.card{
+background:rgba(255,255,255,.08);
+padding:30px;
+border-radius:20px;
+backdrop-filter:blur(10px);
+transition:.4s;
+}
+
+.card:hover{
+transform:translateY(-10px);
+background:rgba(255,255,255,.15);
+}
+
+.card h3{
+margin:15px 0;
+}
+
+.card p{
+line-height:1.7;
+opacity:.9;
+}
+
+.workflow{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+.step{
+padding:25px;
+text-align:center;
+border-radius:20px;
+background:rgba(255,255,255,.08);
+transition:.4s;
+}
+
+.step:hover{
+transform:scale(1.05);
+}
+
+.step h2{
+font-size:45px;
+color:#38bdf8;
+margin-bottom:15px;
+}
+
+.chat{
+max-width:900px;
+margin:auto;
+background:rgba(255,255,255,.08);
+padding:40px;
+border-radius:20px;
+backdrop-filter:blur(12px);
+}
+
+.chat h2{
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+padding:18px;
+border:none;
+border-radius:10px;
+margin-bottom:20px;
+font-size:16px;
+}
+
+.output{
+background:#07131f;
+padding:25px;
+border-radius:15px;
+min-height:130px;
+line-height:1.8;
+}
+
+footer{
+text-align:center;
+padding:40px;
+background:rgba(0,0,0,.2);
+margin-top:70px;
+}
+
+.fade{
+opacity:0;
+transform:translateY(50px);
+transition:1s;
+}
+
+.fade.show{
+opacity:1;
+transform:translateY(0);
+}
+
+@media(max-width:900px){
+
+.hero{
+flex-direction:column;
+text-align:center;
+padding-top:140px;
+}
+
+.hero h1{
+font-size:42px;
+}
+
+.ai-box{
+margin-top:40px;
+width:280px;
+height:280px;
+font-size:90px;
+}
+
+nav ul{
+display:none;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<script>
+  window.wxOConfiguration = {
+    orchestrationID: "7605f4e3997d435db28d3afe005ca017_9f8bd5c7-aab5-41c6-a460-4b50dec482aa",
+    hostURL: "https://au-syd.watson-orchestrate.cloud.ibm.com",
+    rootElementID: "root",
+    deploymentPlatform: "ibmcloud",
+    crn: "crn:v1:bluemix:public:watsonx-orchestrate:au-syd:a/7605f4e3997d435db28d3afe005ca017:9f8bd5c7-aab5-41c6-a460-4b50dec482aa::",
+    chatOptions: {
+        agentId: "d69be307-36d6-41c4-bcda-d29c0ee48ab2", 
+    }
+  };
+  setTimeout(function () {
+    const script = document.createElement('script');
+    script.src = `${window.wxOConfiguration.hostURL}/wxochat/wxoLoader.js?embed=true`;
+    script.addEventListener('load', function () {
+        wxoLoader.init();
+    });
+    document.head.appendChild(script);
+  }, 0);                     
+</script>
+
+
+<nav>
+
+<div class="logo">
+Apex <span>Finance Agent</span>
+</div>
+
+<ul>
+<li><a href="#">Home</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#workflow">Workflow</a></li>
+<li><a href="#assistant">Assistant</a></li>
+</ul>
+
+</nav>
+
+<div class="hero">
+
+<div class="hero-text fade">
+
+<h1>Sequential Task Agent<br><span>Investment Analyst</span></h1>
+
+<p>
+
+Apex Finance Agent is an AI-powered investment analyst that gathers financial
+data, performs multi-step analysis, evaluates market trends, identifies risks,
+and provides intelligent investment recommendations through structured reports.
+
+</p>
+
+<button class="btn" onclick="document.getElementById('assistant').scrollIntoView()">
+Start Analysis
+</button>
+
+</div>
+
+<div class="ai-box fade">
+🤖
+</div>
+
+</div>
+
+<section id="features">
+
+<h1 class="title fade">
+Core Features
+</h1>
+
+<div class="grid">
+
+<div class="card fade">
+<h3>📊 Data Collection</h3>
+<p>Collects stock prices, company reports, financial statements, and market news from trusted sources.</p>
+</div>
+
+<div class="card fade">
+<h3>📈 Financial Analysis</h3>
+<p>Analyzes revenue, profit, assets, liabilities, valuation, and company performance.</p>
+</div>
+
+<div class="card fade">
+<h3>⚠ Risk Detection</h3>
+<p>Identifies market risks, financial weaknesses, and investment opportunities.</p>
+</div>
+
+<div class="card fade">
+<h3>💡 AI Recommendations</h3>
+<p>Provides smart investment insights and structured reports for informed decision-making.</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="workflow">
+
+<h1 class="title fade">
+Sequential Workflow
+</h1>
+
+<div class="workflow">
+
+<div class="step fade">
+<h2>1</h2>
+<h3>Collect Data</h3>
+</div>
+
+<div class="step fade">
+<h2>2</h2>
+<h3>Validate Data</h3>
+</div>
+
+<div class="step fade">
+<h2>3</h2>
+<h3>Analyze KPIs</h3>
+</div>
+
+<div class="step fade">
+<h2>4</h2>
+<h3>Compare Trends</h3>
+</div>
+
+<div class="step fade">
+<h2>5</h2>
+<h3>Generate Report</h3>
+</div>
+
+</div>
+
+</section>
+
+<section id="assistant">
+
+<div class="chat fade">
+
+<h2>💬 Apex Finance Agent</h2>
+
+<input
+id="question"
+placeholder="Example: Analyze Apple stock or Should I invest in Tesla?"
+>
+
+<button class="btn" onclick="analyze()">
+Ask Agent
+</button>
+
+<br><br>
+
+<div class="output" id="result">
+
+👋 Welcome to Apex Finance Agent.
+
+Ask me about:
+<br><br>
+
+• Company Financial Analysis<br>
+• Stock Market Trends<br>
+• Risk Assessment<br>
+• Investment Recommendations<br>
+• Financial Reports
+
+</div>
+
+</div>
+
+</section>
+
+<footer>
+
+<h2>Apex Finance Agent</h2>
+
+<br>
+
+<p>
+Empowering Smarter Investments Through Intelligent Analysis.
+</p>
+
+<br>
+
+<p>
+© 2026 Sequential Task Agent | Investment Analyst
+</p>
+
+</footer>
+
+<script>
+
+function analyze(){
+
+let q=document.getElementById("question").value;
+
+let answer="";
+
+if(q==""){
+
+answer="Please enter your investment question.";
+
+}
+
+else{
+
+answer="<b>Question:</b> "+q+"<br><br>";
+
+answer+="<b>Sequential Analysis</b><br><br>";
+
+answer+="✔ Step 1 : Collecting financial data...<br>";
+answer+="✔ Step 2 : Validating company information...<br>";
+answer+="✔ Step 3 : Analyzing financial ratios and KPIs...<br>";
+answer+="✔ Step 4 : Comparing market trends...<br>";
+answer+="✔ Step 5 : Generating investment insights...<br><br>";
+
+answer+="<b>Recommendation:</b><br>";
+answer+="This is a demo interface. Connect IBM Granite, Langflow, or your backend API to provide live investment analysis and recommendations.";
+
+}
+
+document.getElementById("result").innerHTML=answer;
+
+}
+
+const observer=new IntersectionObserver(entries=>{
+
+entries.forEach(entry=>{
+
+if(entry.isIntersecting){
+
+entry.target.classList.add("show");
+
+}
+
+});
+
+});
+
+document.querySelectorAll(".fade").forEach(el=>observer.observe(el));
+
+</script>
+
+</body>
+</html>
